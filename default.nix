@@ -20,6 +20,8 @@ let
     rcpd = [ pkgs.rsync ];
     kdec-share = [ pkgs.libsForQt5.kdeconnect-kde ];
     cam = [ pkgs.fzf pkgs.ffmpeg-full ];
+    get-my-repo = [ pkgs.gh pkgs.ghq pkgs.fzf ];
+    gc-full-nix = [ ];
   };
 in
 pkgs.lib.mapAttrs'
