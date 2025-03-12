@@ -11,6 +11,7 @@ let
     kill-fzf = [ pkgs.fzf pkgs.ps ];
     get-repo = [ pkgs.gh pkgs.ghq pkgs.git ];
     git-rebase-easy = [ pkgs.fzf ];
+    clipboard = [ pkgs.xclip ];
   };
 in
 pkgs.lib.mapAttrs'
