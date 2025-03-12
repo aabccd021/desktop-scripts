@@ -1,12 +1,12 @@
 { pkgs }:
 let
-  mkScript = name: file: runtimeInputs: pkgs.writeShellApplication {
+  mkScript = name: runtimeInputs: pkgs.writeShellApplication {
     name = name;
     runtimeInputs = runtimeInputs;
-    text = builtins.readFile file;
+    text = builtins.readFile "${./scripts}/${name}.sh";
   };
 in
 {
-  kill-fzf = mkScript "kill-fzf" ./kill-fzf.sh [ pkgs.fzf pkgs.ps ];
-  get-repo = mkScript "get-repo" ./get-repo.sh [ pkgs.gh pkgs.ghq pkgs.git ];
+  kill-fzf = mkScript "kill-fzf" [ pkgs.fzf pkgs.ps ];
+  get-repo = mkScript "get-repo" [ pkgs.gh pkgs.ghq pkgs.git ];
 }
