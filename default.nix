@@ -15,7 +15,7 @@ let
     git-branch-fetch = [ pkgs.fzf ];
     nix-store-repair = [ ];
     tl = [ pkgs.translate-shell ];
-    list-desktops = [ pkgs.findutils ];
+    list-desktops = [ ];
   };
 in
 pkgs.lib.mapAttrs'
