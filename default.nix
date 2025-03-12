@@ -9,9 +9,12 @@ let
 
   scripts = {
     kill-fzf = [ pkgs.fzf pkgs.ps ];
-    get-repo = [ pkgs.gh pkgs.ghq pkgs.git ];
+    get-repo = [ pkgs.gh pkgs.ghq ];
     git-rebase-easy = [ pkgs.fzf ];
     clipboard = [ pkgs.xclip ];
+    git-branch-fetch = [ pkgs.fzf ];
+    nix-store-repair = [ ];
+    tl = [ pkgs.translate-shell ];
   };
 in
 pkgs.lib.mapAttrs'
