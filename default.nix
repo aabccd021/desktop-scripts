@@ -9,8 +9,6 @@ let
     nix-store-repair = [ ];
     tl = [ pkgs.translate-shell ];
     list-desktops = [ ];
-    rcp = [ pkgs.rsync ];
-    rcpd = [ pkgs.rsync ];
     kdec-share = [ pkgs.libsForQt5.kdeconnect-kde ];
     cam = [ pkgs.fzf pkgs.ffmpeg-full ];
     get-my-repo = [ pkgs.gh pkgs.ghq pkgs.fzf ];
