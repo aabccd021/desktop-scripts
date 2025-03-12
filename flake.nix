@@ -10,7 +10,7 @@
   outputs = { self, nixpkgs, treefmt-nix }:
     let
 
-      overlay = (final: _: import ./default.nix { pkgs = final; });
+      overlay = (_: prev: prev.callPackage ./default.nix { });
 
       pkgs = nixpkgs.legacyPackages.x86_64-linux;
 

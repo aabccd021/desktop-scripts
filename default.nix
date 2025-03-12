@@ -1,6 +1,5 @@
 { pkgs }:
 let
-  lib = pkgs.lib;
 
   mkScript = name: runtimeInputs: pkgs.writeShellApplication {
     name = name;
@@ -13,7 +12,7 @@ let
     get-repo = [ pkgs.gh pkgs.ghq pkgs.git ];
   };
 in
-lib.mapAttrs'
+pkgs.lib.mapAttrs'
   (name: runtimeInputs: {
     name = name;
     value = mkScript name runtimeInputs;
