@@ -10,6 +10,7 @@ let
   scripts = {
     kill-fzf = [ pkgs.fzf pkgs.ps ];
     get-repo = [ pkgs.gh pkgs.ghq pkgs.git ];
+    git-rebase-easy = [ pkgs.fzf ];
   };
 in
 pkgs.lib.mapAttrs'
