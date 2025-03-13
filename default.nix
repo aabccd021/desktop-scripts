@@ -13,6 +13,7 @@ let
     cam = [ pkgs.fzf pkgs.ffmpeg-full ];
     get-my-repo = [ pkgs.gh pkgs.ghq pkgs.fzf ];
     gc-full-nix = [ ];
+    ghq-gc = [ pkgs.ghq ];
   };
 in
 pkgs.lib.mapAttrs'
