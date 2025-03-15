@@ -8,27 +8,32 @@ if [ ! -d "$XDG_PICTURES_DIR" ]; then
   exit 1
 fi
 
-monitors=$(
-  xrandr --listactivemonitors |
-    grep -v "Monitors" |
-    sed 's/.*\s\([^ ]*\)$/\1/'
-)
-if [ -z "$monitors" ]; then
+if ! monitor_data=$(xrandr | jc --xrandr); then
+  echo "Failed to get monitor information. Exiting."
+  exit 1
+fi
+
+connected_count=$(echo "$monitor_data" | jq '.screens[0].devices | map(select(.is_connected == true)) | length')
+if [ "$connected_count" -eq 0 ]; then
   echo "No monitors detected. Exiting."
   exit 1
 fi
 
-geometries=$(
-  xrandr |
-    grep " connected " |
-    sed -r 's/^([^ ]+).*\b([0-9]+x[0-9]+\+[0-9]+\+[0-9]+)\b.*/\1 \2/'
-)
 timestamp=$(date +%Y%m%d-%H%M%S)
 
-while IFS= read -r line; do
-  monitor=$(echo "$line" | cut -d' ' -f1)
-  geometry=$(echo "$line" | cut -d' ' -f2)
-  maim -g "$geometry" "$XDG_PICTURES_DIR/screenshot-$timestamp-$monitor.png"
-done <<EOF
-$geometries
-EOF
+echo "$monitor_data" |
+  jq -c '.screens[0].devices[] | select(.is_connected == true)' |
+  while read -r monitor; do
+
+    name=$(echo "$monitor" | jq -r '.device_name')
+    width=$(echo "$monitor" | jq -r '.resolution_width')
+    height=$(echo "$monitor" | jq -r '.resolution_height')
+    x_offset=$(echo "$monitor" | jq -r '.offset_width')
+    y_offset=$(echo "$monitor" | jq -r '.offset_height')
+
+    geometry="${width}x${height}+${x_offset}+${y_offset}"
+
+    target="$XDG_PICTURES_DIR/screenshot-$timestamp-$name.png"
+    echo "Writing screenshot to $target"
+    maim -g "$geometry" "$target"
+  done
