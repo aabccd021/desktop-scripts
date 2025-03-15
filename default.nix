@@ -14,6 +14,7 @@ let
     get-my-repo = [ pkgs.gh pkgs.ghq pkgs.fzf ];
     gc-full-nix = [ ];
     ghq-gc = [ pkgs.ghq ];
+    screenshot-each-monitor = [ pkgs.maim ];
   };
 in
 pkgs.lib.mapAttrs'
