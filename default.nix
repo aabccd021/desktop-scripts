@@ -4,7 +4,7 @@ let
     kill-fzf = [ pkgs.fzf pkgs.ps ];
     get-repo = [ pkgs.gh pkgs.ghq ];
     git-rebase-easy = [ pkgs.fzf ];
-    clipboard = [ pkgs.xclip ];
+    clipboard = [ pkgs.xclip pkgs.wl-clipboard ];
     git-branch-fetch = [ pkgs.fzf ];
     nix-store-repair = [ ];
     tl = [ pkgs.translate-shell ];
