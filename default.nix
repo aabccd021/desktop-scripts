@@ -15,6 +15,7 @@ let
     gc-full-nix = [ ];
     ghq-gc = [ pkgs.ghq ];
     screenshot-each-monitor = [ pkgs.maim pkgs.jc pkgs.jq ];
+    screenshot-each-monitor-wayland = [ pkgs.grim pkgs.jq pkgs.wlr-randr ];
   };
 in
 pkgs.lib.mapAttrs'
