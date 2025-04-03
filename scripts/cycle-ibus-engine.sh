@@ -3,7 +3,7 @@ next_engine=""
 found=false
 
 for engine in "$@"; do
-  if [ "$found" = "true" ]; then
+  if [ "$found" = true ]; then
     next_engine="$engine"
     break
   fi
@@ -14,7 +14,7 @@ for engine in "$@"; do
 done
 
 if [ -z "$next_engine" ]; then
-  if [ "$found" = "true" ]; then
+  if [ "$found" = true ]; then
     next_engine="$1"
   else
     next_engine="${2:-$1}"
