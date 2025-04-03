@@ -17,6 +17,7 @@ let
     screenshot-each-monitor = [ pkgs.maim pkgs.jc pkgs.jq ];
     screenshot-each-monitor-wayland = [ pkgs.grim pkgs.jq pkgs.wlr-randr ];
     cycle-ibus-engine = [ ];
+    open-match = [ pkgs.jq ];
   };
 in
 pkgs.lib.mapAttrs'
