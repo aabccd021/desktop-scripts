@@ -21,4 +21,5 @@ if [ -z "$next_engine" ]; then
   fi
 fi
 
+echo "Switching IBus engine from '$current_engine' to '$next_engine'"
 ibus engine "$next_engine"
