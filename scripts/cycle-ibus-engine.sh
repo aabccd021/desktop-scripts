@@ -14,11 +14,7 @@ for engine in "$@"; do
 done
 
 if [ -z "$next_engine" ]; then
-  if [ -n "${2:-}" ]; then
-    next_engine="${2:-$1}"
-  else
-    next_engine="$1"
-  fi
+  next_engine="${2:-$1}"
 fi
 
 ibus engine "$next_engine"
