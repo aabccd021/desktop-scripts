@@ -1,4 +1,4 @@
-current_engine=$(ibus engine)
+current_engine=$(ibus engine || true)
 next_engine=""
 found=false
 
