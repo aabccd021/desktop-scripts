@@ -3,9 +3,8 @@ selected_file="${1:-}"
 if [ -z "$selected_file" ]; then
   oldfiles=$("$EDITOR" --headless -u NONE -c 'oldfiles | q' 2>&1 | tr -d '\r' | cut -d ' ' -f 2-)
   ghqdirs=$(ghq list --full-path)
-  allfiles=$(printf "%s\n%s" "$oldfiles" "$ghqdirs")
-  selected_file=$(echo "$allfiles" | grep "^$HOME/" | sed "s|^$HOME/||" | fzf)
 
+  selected_file=$(printf "%s\n%s" "$ghqdirs" "$oldfiles" | sort -u | grep "^$HOME/" | sed "s|^$HOME/||" | fzf)
   if [ -z "$selected_file" ]; then
     exit 0
   fi
