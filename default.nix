@@ -18,6 +18,7 @@ let
     screenshot-each-monitor-wayland = [ pkgs.grim pkgs.jq pkgs.wlr-randr ];
     cycle-ibus-engine = [ ];
     open-match = [ pkgs.jq ];
+    nvim-nix-ghq-mru = [ pkgs.fzf ];
   };
 in
 pkgs.lib.mapAttrs'
