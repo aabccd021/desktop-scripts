@@ -16,4 +16,4 @@ file_dir=$(dirname "$selected_file")
 
 repo_root=$(git -C "$file_dir" rev-parse --show-toplevel 2>/dev/null || echo "$file_dir")
 
-nix develop "$repo_root" --command "$EDITOR" "$selected_file" 2>/dev/null || "$EDITOR" "$selected_file"
+nix develop "$repo_root" --command "$EDITOR" "$selected_file" || "$EDITOR" "$selected_file"
