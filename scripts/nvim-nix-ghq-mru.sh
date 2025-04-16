@@ -4,7 +4,7 @@ if [ -z "$selected_file" ]; then
   oldfiles=$("$EDITOR" --headless -u NONE -c 'oldfiles | q' 2>&1 | tr -d '\r' | cut -d ' ' -f 2-)
   ghqdirs=$(ghq list --full-path)
 
-  selected_file=$(printf "%s\n%s" "$ghqdirs" "$oldfiles" | awk '!seen[$0]++' | grep "^$HOME/" | sed "s|^$HOME/||" | fzf)
+  selected_file=$(printf "%s\n%s" "$oldfiles" "$ghqdirs" | awk '!seen[$0]++' | grep "^$HOME/" | sed "s|^$HOME/||" | fzf)
   if [ -z "$selected_file" ]; then
     exit 0
   fi
