@@ -27,13 +27,6 @@
 
       scripts = import ./default.nix { pkgs = pkgs; };
 
-      apps = builtins.mapAttrs
-        (name: script: {
-          type = "app";
-          program = pkgs.lib.getExe script;
-        })
-        scripts;
-
       packages = scripts // {
         formatting = treefmtEval.config.build.check self;
       };
@@ -43,11 +36,11 @@
 
       formatter.x86_64-linux = treefmtEval.config.build.wrapper;
 
-      packages.x86_64-linux = packages;
-
       checks.x86_64-linux = packages;
 
-      apps.x86_64-linux = apps;
+      packages.x86_64-linux = packages // {
+        gcroot = pkgs.linkFarm "gcroot" packages;
+      };
 
       overlays.default = overlay;
 
