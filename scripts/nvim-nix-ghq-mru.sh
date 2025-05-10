@@ -23,7 +23,7 @@ if [ -d "$selected_path" ]; then
   repo_root="$selected_path"
 elif [ -f "$selected_path" ]; then
   file_dir=$(dirname "$selected_path")
-  repo_root=$(git -C "$file_dir" rev-parse --show-toplevel 2>/dev/null ||
+  repo_root=$(git -C "$file_dir" rev-parse --show-toplevel ||
     echo "$file_dir")
 fi
 
@@ -39,7 +39,7 @@ if [ -z "$devShell" ]; then
   exec "$EDITOR" "$selected_path"
 fi
 
-if ! nix build --no-link ".#.devShells.$system.default" 2>/dev/null; then
+if ! nix build --no-link ".#.devShells.$system.default"; then
   exec "$EDITOR" "$selected_path"
 fi
 
