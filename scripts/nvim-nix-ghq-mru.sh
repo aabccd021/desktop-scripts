@@ -10,7 +10,8 @@ if [ -z "$selected_path" ]; then
   selected_path=$(printf "%s\n%s" "$oldfiles" "$ghqdirs" |
     awk '!seen[$0]++' |
     grep "^$HOME/" |
-    sed "s|^$HOME/||" | fzf)
+    sed "s|^$HOME/||" |
+    fzf)
 
   if [ -z "$selected_path" ]; then
     exit 0
@@ -28,7 +29,7 @@ elif [ -f "$selected_path" ]; then
 fi
 
 trap 'cd $(pwd)' EXIT
-cd "$repo_root" || exit
+cd "$repo_root" || exit 1
 
 system=$(nix eval --impure --raw --expr 'builtins.currentSystem')
 devShell=$(nix flake show --json |
