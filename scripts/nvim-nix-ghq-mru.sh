@@ -1,19 +1,22 @@
-selected_file="${1:-}"
+selected_path="${1:-}"
 
-if [ -z "$selected_file" ]; then
+if [ -z "$selected_path" ]; then
   oldfiles=$("$EDITOR" --headless -u NONE -c 'oldfiles | q' 2>&1 | tr -d '\r' | cut -d ' ' -f 2-)
   ghqdirs=$(ghq list --full-path)
 
-  selected_file=$(printf "%s\n%s" "$oldfiles" "$ghqdirs" | awk '!seen[$0]++' | grep "^$HOME/" | sed "s|^$HOME/||" | fzf)
-  if [ -z "$selected_file" ]; then
+  selected_path=$(printf "%s\n%s" "$oldfiles" "$ghqdirs" | awk '!seen[$0]++' | grep "^$HOME/" | sed "s|^$HOME/||" | fzf)
+  if [ -z "$selected_path" ]; then
     exit 0
   fi
 
-  selected_file="$HOME/$selected_file"
+  selected_path="$HOME/$selected_path"
 fi
 
-file_dir=$(dirname "$selected_file")
+if [ -d "$selected_path" ]; then
+  repo_root="$selected_path"
+elif [ -f "$selected_path" ]; then
+  file_dir=$(dirname "$selected_path")
+  repo_root=$(git -C "$file_dir" rev-parse --show-toplevel 2>/dev/null || echo "$file_dir")
+fi
 
-repo_root=$(git -C "$file_dir" rev-parse --show-toplevel 2>/dev/null || echo "$file_dir")
-
-nix develop "$repo_root" --command "$EDITOR" "$selected_file" || "$EDITOR" "$selected_file"
+nix develop "$repo_root" --command "$EDITOR" "$selected_path" || "$EDITOR" "$selected_path"
