@@ -18,31 +18,36 @@
         projectRootFile = "flake.nix";
         programs.nixpkgs-fmt.enable = true;
         programs.prettier.enable = true;
-        settings.formatter.prettier.excludes = [ "secrets.yaml" ];
         programs.shfmt.enable = true;
         programs.shellcheck.enable = true;
         settings.formatter.shellcheck.options = [ "-s" "sh" ];
         settings.global.excludes = [ "*.sql" "LICENSE" ];
       };
 
+      formatter = treefmtEval.config.build.wrapper;
+
       scripts = import ./default.nix { pkgs = pkgs; };
+
+      devShells.default = pkgs.mkShellNoCC {
+        buildInputs = [ pkgs.nixd ];
+      };
 
       packages = scripts // {
         formatting = treefmtEval.config.build.check self;
+        formatter = formatter;
       };
 
     in
     {
 
-      formatter.x86_64-linux = treefmtEval.config.build.wrapper;
-
-      checks.x86_64-linux = packages;
-
       packages.x86_64-linux = packages // {
         gcroot = pkgs.linkFarm "gcroot" packages;
       };
 
+      checks.x86_64-linux = packages;
+      formatter.x86_64-linux = formatter;
       overlays.default = overlay;
+      devShells.x86_64-linux = devShells;
 
     };
 }
