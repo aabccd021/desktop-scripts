@@ -8,6 +8,7 @@ if [ -z "$selected_path" ]; then
   ghqdirs=$(ghq list --full-path)
 
   selected_path=$(printf "%s\n%s" "$oldfiles" "$ghqdirs" |
+    grep -v '/quickfix-[0-9]\+$' |
     awk '!seen[$0]++' |
     grep "^$HOME/" |
     sed "s|^$HOME/||" |
