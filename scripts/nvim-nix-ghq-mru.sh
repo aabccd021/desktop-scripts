@@ -35,14 +35,6 @@ trap 'cd $(pwd)' EXIT
 cd "$repo_root" || exit 1
 
 system=$(nix eval --impure --raw --expr 'builtins.currentSystem')
-devShell=$(nix flake show --json |
-  jq ".devShells[\"$system\"][\"default\"]" ||
-  true)
-
-if [ -z "$devShell" ]; then
-  exec "$EDITOR" "$selected_path"
-fi
-
 if ! nix build --no-link ".#.devShells.$system.default"; then
   exec "$EDITOR" "$selected_path"
 fi
