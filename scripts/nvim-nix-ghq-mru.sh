@@ -26,6 +26,8 @@ elif [ -f "$selected_path" ]; then
   file_dir=$(dirname "$selected_path")
   repo_root=$(git -C "$file_dir" rev-parse --show-toplevel ||
     echo "$file_dir")
+else
+  repo_root=$(dirname "$selected_path")
 fi
 
 trap 'cd $(pwd)' EXIT
