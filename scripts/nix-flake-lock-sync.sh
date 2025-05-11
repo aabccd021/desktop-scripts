@@ -1,3 +1,6 @@
+NIX_CONFIG="access-tokens = github.com=$(gh auth token)"
+export NIX_CONFIG
+
 root_dir="$(ghq root)/github.com/aabccd021"
 
 for dir in "$root_dir"/*/; do
