@@ -39,5 +39,5 @@ if ! nix build --no-link ".#.devShells.$system.default"; then
   exec "$EDITOR" "$selected_path"
 fi
 
-exec nix develop --command "$EDITOR" "$selected_path" ||
+nix develop --command "$EDITOR" "$selected_path" ||
   exec "$EDITOR" "$selected_path"
