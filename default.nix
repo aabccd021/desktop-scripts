@@ -2,7 +2,7 @@
 let
   scripts = {
     kill-fzf = [ pkgs.fzf pkgs.ps ];
-    get-repo = [ pkgs.gh pkgs.ghq ];
+    get-repo = [ pkgs.gh ];
     git-rebase-easy = [ pkgs.fzf ];
     clipboard = [ pkgs.xclip pkgs.wl-clipboard ];
     git-branch-fetch = [ pkgs.fzf ];
@@ -11,14 +11,15 @@ let
     list-desktops = [ ];
     kdec-share = [ pkgs.libsForQt5.kdeconnect-kde ];
     cam = [ pkgs.fzf pkgs.ffmpeg-full ];
-    get-my-repo = [ pkgs.gh pkgs.ghq pkgs.fzf ];
+    get-my-repo = [ pkgs.gh pkgs.fzf ];
     gc-full-nix = [ ];
-    ghq-gc = [ pkgs.ghq ];
+    ghq-gc = [ ];
     screenshot-each-monitor = [ pkgs.maim pkgs.jc pkgs.jq ];
     screenshot-each-monitor-wayland = [ pkgs.grim pkgs.jq pkgs.wlr-randr ];
     cycle-ibus-engine = [ ];
     open-match = [ pkgs.jq ];
     nvim-nix-ghq-mru = [ pkgs.fzf pkgs.gawk pkgs.jq ];
+    nix-flake-lock-sync = [ ];
   };
 in
 pkgs.lib.mapAttrs'
