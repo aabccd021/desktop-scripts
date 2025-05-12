@@ -32,7 +32,7 @@
         buildInputs = [ pkgs.nixd ];
       };
 
-      packages = scripts // {
+      packages = scripts // devShells // {
         formatting = treefmtEval.config.build.check self;
         formatter = formatter;
       };
