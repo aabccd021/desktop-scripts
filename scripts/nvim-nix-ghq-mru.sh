@@ -21,6 +21,7 @@ if [ -z "$selected_path" ]; then
   selected_path="$HOME/$selected_path"
 fi
 
+repo_root=""
 if [ -d "$selected_path" ]; then
   repo_root="$selected_path"
 elif [ -f "$selected_path" ]; then
