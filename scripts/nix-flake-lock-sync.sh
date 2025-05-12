@@ -27,6 +27,7 @@ for dir in "$root_dir"/*/; do
   nix flake update nixpkgs --inputs-from ~/ghq/github.com/aabccd021/nixos || true
   nix flake update sops-nix --inputs-from ~/ghq/github.com/aabccd021/nixos || true
   nix flake update treefmt-nix --inputs-from ~/ghq/github.com/aabccd021/nixos || true
+  nix flake update disko --inputs-from ~/ghq/github.com/aabccd021/nixos || true
 
   nix-checkpoint || continue
 
