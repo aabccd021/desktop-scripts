@@ -17,6 +17,8 @@ for dir in "$root_dir"/*/; do
   fi
 
   cd "$dir" || exit
+
+  echo ""
   echo "$dir: Updating flake"
 
   last_commit=$(git rev-parse HEAD)
