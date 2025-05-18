@@ -13,12 +13,12 @@ let
     cam = [ pkgs.fzf pkgs.ffmpeg-full ];
     get-my-repo = [ pkgs.gh pkgs.fzf ];
     gc-full-nix = [ ];
-    ghq-gc = [ ];
     screenshot-each-monitor = [ pkgs.maim pkgs.jc pkgs.jq ];
     screenshot-each-monitor-wayland = [ pkgs.grim pkgs.jq pkgs.wlr-randr ];
     cycle-ibus-engine = [ ];
     open-match = [ pkgs.jq ];
-    nvim-nix-ghq-mru = [ pkgs.fzf pkgs.gawk pkgs.jq ];
+    ghq-gc = [ ];
+    ghq-nvim-nix = [ pkgs.fzf pkgs.gawk pkgs.jq ];
     ghq-nix-flake-update = [ ];
   };
 in

@@ -19,7 +19,7 @@ for dir in "$root_dir"/*/; do
   cd "$dir" || exit
   echo "$dir: Updating flake"
 
-  nix flake update
+  nix flake update --commit-lock-file
 
   nix-checkpoint || continue
 
