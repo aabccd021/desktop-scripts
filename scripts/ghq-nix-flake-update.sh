@@ -19,7 +19,16 @@ for dir in "$root_dir"/*/; do
   cd "$dir" || exit
   echo "$dir: Updating flake"
 
+  last_commit=$(git rev-parse HEAD)
+
   nix flake update --commit-lock-file
+
+  last_commit_after_update=$(git rev-parse HEAD)
+
+  if [ "$last_commit" = "$last_commit_after_update" ]; then
+    echo "$dir: No changes"
+    continue
+  fi
 
   nix-checkpoint || continue
 
