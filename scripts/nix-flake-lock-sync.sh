@@ -24,10 +24,7 @@ for dir in "$root_dir"/*/; do
   cd "$dir" || exit
   echo "$dir: Updating flake"
 
-  nix flake update nixpkgs --inputs-from ~/ghq/github.com/aabccd021/nixos || true
-  nix flake update sops-nix --inputs-from ~/ghq/github.com/aabccd021/nixos || true
-  nix flake update treefmt-nix --inputs-from ~/ghq/github.com/aabccd021/nixos || true
-  nix flake update disko --inputs-from ~/ghq/github.com/aabccd021/nixos || true
+  nix flake update
 
   nix-checkpoint || continue
 
