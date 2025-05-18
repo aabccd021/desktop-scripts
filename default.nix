@@ -19,7 +19,7 @@ let
     cycle-ibus-engine = [ ];
     open-match = [ pkgs.jq ];
     nvim-nix-ghq-mru = [ pkgs.fzf pkgs.gawk pkgs.jq ];
-    nix-flake-lock-sync = [ ];
+    ghq-nix-flake-update = [ ];
   };
 in
 pkgs.lib.mapAttrs'

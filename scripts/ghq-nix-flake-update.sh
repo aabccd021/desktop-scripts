@@ -16,11 +16,6 @@ for dir in "$root_dir"/*/; do
     continue
   fi
 
-  if [ "$dir" = "$root_dir/nixos/" ]; then
-    echo "$dir: Skipping nixos"
-    continue
-  fi
-
   cd "$dir" || exit
   echo "$dir: Updating flake"
 
