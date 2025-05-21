@@ -1,7 +1,9 @@
 NIX_CONFIG="access-tokens = github.com=$(gh auth token)"
 export NIX_CONFIG
 
-root_dir="$(ghq root)/github.com/aabccd021"
+username=$(gh api user -q '.login')
+
+root_dir="$(ghq root)/github.com/$username"
 
 for dir in "$root_dir"/*/; do
 
