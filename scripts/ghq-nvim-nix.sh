@@ -1,10 +1,20 @@
 selected_path="${1:-}"
 
 if [ -z "$selected_path" ]; then
-  oldfiles=$("$EDITOR" --headless -u NONE -c 'oldfiles | q' 2>&1 |
+  all_oldfiles=$("$EDITOR" --headless -u NONE -c 'oldfiles | q' 2>&1 |
     tr -d '\r' |
     cut -d ' ' -f 2-)
 
+  # only include files, not directories
+  oldfiles=""
+  while IFS= read -r line; do
+    if [ -f "$line" ]; then
+      oldfiles="$oldfiles$line
+"
+    fi
+  done <<EOF
+$all_oldfiles
+EOF
   ghqdirs=$(ghq list --full-path)
 
   selected_path=$(printf "%s\n%s" "$oldfiles" "$ghqdirs" |
