@@ -41,7 +41,7 @@ let
     ghq-nvim-nix = [
       pkgs.fzf
       pkgs.gawk
-      pkgs.jq
+      pkgs.moreutils
     ];
     ghq-nix-flake-update = [ ];
   };

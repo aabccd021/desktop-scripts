@@ -1,25 +1,21 @@
 selected_path="${1:-}"
 
 if [ -z "$selected_path" ]; then
+  logfile="$XDG_DATA_HOME/nvim/oldfiles.txt"
 
-  oldfiles=$(
-    # cat ~/.local/share/nvim/oldfiles.txt |
-    while IFS= read -r file_path; do
-      if [ -f "$file_path" ]; then
-        printf "%s\n" "$file_path"
-      fi
-    done <~/.local/share/nvim/oldfiles.txt
-  )
-  echo "Loading old files from ~/.local/share/nvim/oldfiles.txt"
+  # cleanup logfile
+  tmpfile="$(mktemp)"
+  while IFS= read -r line; do
+    if [ -f "$line" ]; then
+      echo "$line" >>"$tmpfile"
+    fi
+  done <"$logfile"
+  tac "$tmpfile" | awk '!seen[$0]++' | tac | tail -n 1000 >"$logfile"
 
+  oldfiles=$(tac "$logfile")
   ghqdirs=$(ghq list --full-path)
 
-  selected_path=$(printf "%s\n%s" "$oldfiles" "$ghqdirs" |
-    grep -v '/quickfix-[0-9]\+$' |
-    awk '!seen[$0]++' |
-    grep "^$HOME/" |
-    sed "s|^$HOME/||" |
-    fzf)
+  selected_path=$(printf "%s\n%s" "$oldfiles" "$ghqdirs" | grep "^$HOME/" | sed "s|^$HOME/||" | fzf)
 
   if [ -z "$selected_path" ]; then
     exit 0
