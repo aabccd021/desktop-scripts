@@ -1,16 +1,16 @@
 selected_path="${1:-}"
 
 if [ -z "$selected_path" ]; then
+
   oldfiles=$(
-    "$EDITOR" --headless -u NONE -c 'oldfiles | q' 2>&1 |
-      tr -d '\r' |
-      cut -d ' ' -f 2- |
-      while IFS= read -r file_path; do
-        if [ -f "$file_path" ]; then
-          printf "%s\n" "$file_path"
-        fi
-      done
+    # cat ~/.local/share/nvim/oldfiles.txt |
+    while IFS= read -r file_path; do
+      if [ -f "$file_path" ]; then
+        printf "%s\n" "$file_path"
+      fi
+    done <~/.local/share/nvim/oldfiles.txt
   )
+  echo "Loading old files from ~/.local/share/nvim/oldfiles.txt"
 
   ghqdirs=$(ghq list --full-path)
 
