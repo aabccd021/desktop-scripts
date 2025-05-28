@@ -1,3 +1,4 @@
+set -x
 selected_path="${1:-}"
 
 if [ -z "$selected_path" ]; then
@@ -15,13 +16,16 @@ if [ -z "$selected_path" ]; then
   oldfiles=$(tac "$logfile")
   ghqdirs=$(ghq list --full-path)
 
-  selected_path=$(printf "%s\n%s" "$oldfiles" "$ghqdirs" | sed "s|^$HOME/|~/|" | fzf)
+  selected_path=$(
+    printf "%s\n%s" "$oldfiles" "$ghqdirs" |
+      sed "s|^$HOME/|~/|" |
+      fzf |
+      sed "s|^~/|$HOME/|"
+  )
 
   if [ -z "$selected_path" ]; then
     exit 0
   fi
-
-  selected_path="$HOME/$selected_path"
 fi
 
 repo_root=""
@@ -53,5 +57,9 @@ if ! nix build --no-link ".#.devShells.$system.default"; then
   exec "$EDITOR" "$selected_path"
 fi
 
-nix develop --command "$EDITOR" "$selected_path/flake.nix" ||
+if [ "$selected_path" = "$repo_root" ]; then
+  selected_path="$repo_root/flake.nix"
+fi
+
+nix develop --command "$EDITOR" "$selected_path" ||
   exec "$EDITOR" "$selected_path"
