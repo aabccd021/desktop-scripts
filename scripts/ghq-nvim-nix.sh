@@ -1,4 +1,3 @@
-set -x
 selected_path="${1:-}"
 
 if [ -z "$selected_path" ]; then
