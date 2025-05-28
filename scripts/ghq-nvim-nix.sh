@@ -15,7 +15,7 @@ if [ -z "$selected_path" ]; then
   oldfiles=$(tac "$logfile")
   ghqdirs=$(ghq list --full-path)
 
-  selected_path=$(printf "%s\n%s" "$oldfiles" "$ghqdirs" | grep "^$HOME/" | sed "s|^$HOME/||" | fzf)
+  selected_path=$(printf "%s\n%s" "$oldfiles" "$ghqdirs" | sed "s|^$HOME/|~/|" | fzf)
 
   if [ -z "$selected_path" ]; then
     exit 0
@@ -41,8 +41,17 @@ cd "$repo_root" || exit 1
 
 system=$(nix eval --impure --raw --expr 'builtins.currentSystem')
 if ! nix build --no-link ".#.devShells.$system.default"; then
+  # get absolute path of readme* (ignorecase) file if it exists
+  readme_file=$(
+    find "$selected_path" -maxdepth 1 -type f \( -iname "readme*" -o -iname "README*" \) |
+      head -n 1 ||
+      true
+  )
+  if [ -n "$readme_file" ]; then
+    selected_path=$(realpath "$readme_file")
+  fi
   exec "$EDITOR" "$selected_path"
 fi
 
-nix develop --command "$EDITOR" "$selected_path" ||
+nix develop --command "$EDITOR" "$selected_path/flake.nix" ||
   exec "$EDITOR" "$selected_path"

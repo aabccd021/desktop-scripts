@@ -42,6 +42,7 @@ let
       pkgs.fzf
       pkgs.gawk
       pkgs.moreutils
+      pkgs.findutils
     ];
     ghq-nix-flake-update = [ ];
   };
