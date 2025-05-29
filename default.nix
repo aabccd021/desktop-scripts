@@ -45,6 +45,7 @@ let
       pkgs.findutils
     ];
     ghq-nix-flake-update = [ ];
+    dua-nix = [ pkgs.dua ];
   };
 in
 pkgs.lib.mapAttrs' (name: runtimeInputs: {
