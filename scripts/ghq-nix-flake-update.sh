@@ -2,38 +2,44 @@ NIX_CONFIG="access-tokens = github.com=$(gh auth token)"
 export NIX_CONFIG
 
 username=$(gh api user -q '.login')
-
 root_dir="$(ghq root)/github.com/$username"
 
-for dir in "$root_dir"/*/; do
+visited=""
 
-  if [ ! -f "$dir/flake.nix" ]; then
-    echo "$dir: Skipping non-flake"
-    continue
+update_flake() {
+  node="$1"
+
+  inputs=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$node\".inputs | to_entries | map(.value) | .[]")
+
+  for input in $inputs; do
+    owner=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$input\".original.owner")
+    if [ "$owner" = "$username" ]; then
+      repo=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$input\".original.repo")
+      update_flake "$repo"
+    fi
+  done
+
+  if [ "$node" = "root" ]; then
+    update_dir="$dir"
+  else
+    update_dir="$root_dir/$node"
   fi
 
-  # continue if there is unstaged changes
-  if ! git -C "$dir" diff --quiet; then
-    echo "$dir: Skipping unstaged changes"
-    continue
-  fi
+  for visited_dir in $visited; do
+    if [ "$visited_dir" = "$update_dir" ]; then
+      return
+    fi
+  done
 
-  cd "$dir" || exit
-
-  echo ""
-  echo "$dir: Updating flake"
-
-  last_commit=$(git rev-parse HEAD)
-
+  cd "$update_dir" || exit 1
+  echo "Updating flake in $update_dir"
   nix flake update --commit-lock-file
+  nix-checkpoint
 
-  last_commit_after_update=$(git rev-parse HEAD)
+  visited="$visited $update_dir"
+}
 
-  if [ "$last_commit" = "$last_commit_after_update" ]; then
-    echo "$dir: No changes"
-    continue
-  fi
-
-  nix-checkpoint || continue
-
+for dir in "$root_dir"/*/; do
+  metadata=$(nix flake metadata "$dir" --json)
+  update_flake "root"
 done

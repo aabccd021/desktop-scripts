@@ -44,7 +44,7 @@ let
       pkgs.moreutils
       pkgs.findutils
     ];
-    ghq-nix-flake-update = [ ];
+    ghq-nix-flake-update = [ pkgs.jq ];
     dua-nix = [ pkgs.dua ];
   };
 in
