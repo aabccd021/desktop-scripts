@@ -26,8 +26,7 @@ update_flake() {
   fi
 
   if [ ! -d "$update_dir" ]; then
-    echo "Directory $update_dir does not exist, skipping."
-    return
+    ghq get "$username/$node"
   fi
 
   for visited_dir in $visited; do
