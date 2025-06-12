@@ -44,6 +44,12 @@ update_flake() {
 }
 
 for dir in "$root_dir"/*/; do
+
+  if [ ! -f "$dir/flake.nix" ]; then
+    echo "$dir: Skipping non-flake"
+    continue
+  fi
+
   metadata=$(nix flake metadata "$dir" --json)
   update_flake "root"
 done
