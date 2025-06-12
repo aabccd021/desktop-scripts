@@ -25,6 +25,11 @@ update_flake() {
     update_dir="$root_dir/$node"
   fi
 
+  if [ ! -d "$update_dir" ]; then
+    echo "Directory $update_dir does not exist, skipping."
+    return
+  fi
+
   for visited_dir in $visited; do
     if [ "$visited_dir" = "$update_dir" ]; then
       return
