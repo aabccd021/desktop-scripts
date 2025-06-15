@@ -11,9 +11,11 @@ update_flake() {
   echo "Processing node: $node"
 
   inputs=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$node\".inputs | to_entries | map(.value) | .[]")
+  echo "Inputs for $node: $inputs"
 
   for input in $inputs; do
     owner=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$input\".original.owner")
+    echo "Processing input: $input, owner: $owner"
     if [ "$owner" = "$username" ]; then
       repo=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$input\".original.repo")
       update_flake "$repo"
