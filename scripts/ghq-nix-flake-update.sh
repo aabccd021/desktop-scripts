@@ -49,8 +49,6 @@ for dir in "$root_dir"/*/; do
     continue
   fi
 
-  echo "Found flake.nix in $dir"
-
   metadata=$(nix flake metadata "$dir" --json)
   update_flake "root"
 done
