@@ -8,6 +8,7 @@ visited=""
 
 update_flake() {
   node="$1"
+  echo "Processing node: $node"
 
   inputs=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$node\".inputs | to_entries | map(.value) | .[]")
 
@@ -31,6 +32,7 @@ update_flake() {
 
   for visited_dir in $visited; do
     if [ "$visited_dir" = "$update_dir" ]; then
+      echo "Already visited $update_dir, skipping"
       return
     fi
   done
