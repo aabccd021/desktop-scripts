@@ -8,33 +8,29 @@ visited=""
 
 update_flake() {
   node="$1"
-  echo "Processing node: $node"
 
   inputs=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$node\".inputs | to_entries | map(.value) | .[]")
-  echo "Inputs for $node: $inputs"
 
   for input in $inputs; do
     owner=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$input\".original.owner")
-    echo "Processing input: $input, owner: $owner"
     if [ "$owner" = "$username" ]; then
       repo=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$input\".original.repo")
-      update_flake "$repo"
+      update_flake "$input"
     fi
   done
 
   if [ "$node" = "root" ]; then
     update_dir="$dir"
   else
-    update_dir="$root_dir/$node"
+    update_dir="$root_dir/$repo"
   fi
 
   if [ ! -d "$update_dir" ]; then
-    ghq get "$username/$node"
+    ghq get "$username/$repo"
   fi
 
   for visited_dir in $visited; do
     if [ "$visited_dir" = "$update_dir" ]; then
-      echo "Already visited $update_dir, skipping"
       return
     fi
   done
@@ -50,7 +46,6 @@ update_flake() {
 for dir in "$root_dir"/*/; do
 
   if [ ! -f "$dir/flake.nix" ]; then
-    echo "$dir: Skipping non-flake"
     continue
   fi
 
