@@ -9,6 +9,7 @@ visited=""
 update_flake() {
   node="$1"
   echo "Processing node: $node"
+  echo "$metadata" | jq .
 
   inputs=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$node\".inputs | to_entries | map(.value) | .[]")
   echo "Inputs for $node: $inputs"
