@@ -4,58 +4,42 @@ export NIX_CONFIG
 username=$(gh api user -q '.login')
 root_dir="$(ghq root)/github.com/$username"
 
-visited=""
+tmpfile=$(mktemp)
 
 update_flake() {
   node="$1"
-  echo "Processing node: $node"
-
   inputs=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$node\".inputs | to_entries | map(.value) | .[]")
-  echo "Inputs for $node: $inputs"
-
   for input in $inputs; do
     owner=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$input\".original.owner")
-    echo "Processing input: $input, owner: $owner"
     if [ "$owner" = "$username" ]; then
       repo=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$input\".original.repo")
+      echo "$root_dir/$repo/" >>"$tmpfile"
       update_flake "$input"
     fi
   done
-
-  if [ "$node" = "root" ]; then
-    update_dir="$dir"
-  else
-    update_dir="$root_dir/$repo"
-  fi
-
-  if [ ! -d "$update_dir" ]; then
-    ghq get "$username/$repo"
-  fi
-
-  for visited_dir in $visited; do
-    if [ "$visited_dir" = "$update_dir" ]; then
-      echo "Already visited $update_dir, skipping"
-      return
-    fi
-  done
-
-  cd "$update_dir" || exit 1
-  echo "Updating flake in $update_dir"
-  nix flake update --commit-lock-file
-  nix-checkpoint
-
-  visited="$visited $update_dir"
 }
 
 for dir in "$root_dir"/*/; do
 
   if [ ! -f "$dir/flake.nix" ]; then
-    echo "$dir: Skipping non-flake"
     continue
   fi
 
-  echo "Found flake.nix in $dir"
-
   metadata=$(nix flake metadata "$dir" --json)
+  echo "$dir" >>"$tmpfile"
   update_flake "root"
+done
+
+update_dirs=$(tac "$tmpfile" | awk '!seen[$0]++')
+
+for dir in $update_dirs; do
+
+  if [ ! -d "$dir" ]; then
+    ghq get "$dir"
+  fi
+
+  cd "$dir" || exit 1
+  echo "Updating flake in $dir"
+  nix flake update --commit-lock-file
+  nix-checkpoint
 done
