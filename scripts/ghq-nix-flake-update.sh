@@ -1,3 +1,18 @@
+update_externals=false
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+  --update-externals)
+    update_externals=true
+    ;;
+  *)
+    echo "Unknown option: $1"
+    exit 1
+    ;;
+  esac
+  shift
+done
+
 NIX_CONFIG="access-tokens = github.com=$(gh auth token)"
 export NIX_CONFIG
 
@@ -5,6 +20,7 @@ username=$(gh api user -q '.login')
 root_dir="$(ghq root)/github.com/$username"
 
 tmpfile=$(mktemp)
+tmpdir=$(mktemp -d)
 
 update_flake() {
   node="$1"
@@ -25,7 +41,9 @@ for dir in "$root_dir"/*/; do
     continue
   fi
 
+  dirbase=$(basename "$dir")
   metadata=$(nix flake metadata "$dir" --json)
+  echo "$metadata" >"$tmpdir/$dirbase.json"
   echo "$dir" >>"$tmpfile"
   update_flake "root"
 done
@@ -40,6 +58,14 @@ for dir in $update_dirs; do
 
   cd "$dir" || exit 1
   echo "Updating flake in $dir"
-  nix flake update --commit-lock-file
+  dirbase=$(basename "$dir")
+  metadata=$(cat "$tmpdir/$dirbase.json")
+  inputs=$(echo "$metadata" | jq --raw-output '.locks.nodes."root".inputs | to_entries | map(.key) | .[]')
+  for input in $inputs; do
+    owner=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$input\".original.owner")
+    if [ "$owner" = "$username" ] || [ "$update_externals" = true ]; then
+      nix flake update "$input" --commit-lock-file
+    fi
+  done
   nix-checkpoint
 done
