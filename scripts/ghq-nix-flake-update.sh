@@ -42,7 +42,7 @@ for dir in "$root_dir"/*/; do
     continue
   fi
 
-  echo "Reading flake metadata of $repo"
+  echo "Parsing inputs of $repo"
   metadata=$(nix flake metadata "$root_dir/$repo" --json)
   echo "$metadata" >"$tmpdir/$repo.json"
   echo "$repo" >>"$tmpfile"
@@ -73,14 +73,11 @@ for repo in $update_dirs; do
     owner=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$input\".original.owner")
     if [ "$owner" = "$username" ] || [ "$update_externals" = true ]; then
       echo ""
-      set -x
+      echo "Updating input $input"
       nix flake update "$input"
       git add flake.lock
-      set +x
       if [ -n "$(git status --porcelain)" ]; then
-        set -x
         git commit -m "Update flake input $input"
-        set +x
         nix-checkpoint
         checkpoint_ran=true
       fi
@@ -88,6 +85,7 @@ for repo in $update_dirs; do
   done
 
   if [ "$checkpoint_ran" = false ]; then
+    echo ""
     nix-checkpoint
   fi
 done
