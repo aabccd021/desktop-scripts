@@ -53,7 +53,6 @@ update_dirs=$(tac "$tmpfile" | awk '!seen[$0]++')
 
 for repo in $update_dirs; do
   echo ""
-  echo ""
   echo "Updating repository $repo"
 
   if [ ! -d "$root_dir/$repo" ]; then
@@ -72,7 +71,6 @@ for repo in $update_dirs; do
   for input in $inputs; do
     owner=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$input\".original.owner")
     if [ "$owner" = "$username" ] || [ "$update_externals" = true ]; then
-      echo ""
       echo "Updating input $input"
       nix flake update "$input"
       git add flake.lock
@@ -85,7 +83,6 @@ for repo in $update_dirs; do
   done
 
   if [ "$checkpoint_ran" = false ]; then
-    echo ""
     nix-checkpoint
   fi
 done
