@@ -29,43 +29,65 @@ update_flake() {
     owner=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$input\".original.owner")
     if [ "$owner" = "$username" ]; then
       repo=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$input\".original.repo")
-      echo "$root_dir/$repo/" >>"$tmpfile"
+      echo "$repo" >>"$tmpfile"
       update_flake "$input"
     fi
   done
 }
 
 for dir in "$root_dir"/*/; do
+  repo=$(basename "$dir")
 
-  if [ ! -f "$dir/flake.nix" ]; then
+  if [ ! -f "$root_dir/$repo/flake.nix" ]; then
     continue
   fi
 
-  dirbase=$(basename "$dir")
-  metadata=$(nix flake metadata "$dir" --json)
-  echo "$metadata" >"$tmpdir/$dirbase.json"
-  echo "$dir" >>"$tmpfile"
+  echo "Reading flake metadata of $repo"
+  metadata=$(nix flake metadata "$root_dir/$repo" --json)
+  echo "$metadata" >"$tmpdir/$repo.json"
+  echo "$repo" >>"$tmpfile"
   update_flake "root"
 done
 
 update_dirs=$(tac "$tmpfile" | awk '!seen[$0]++')
 
-for dir in $update_dirs; do
+for repo in $update_dirs; do
+  echo ""
+  echo ""
+  echo "Updating repository $repo"
 
-  if [ ! -d "$dir" ]; then
-    ghq get "$dir"
+  if [ ! -d "$root_dir/$repo" ]; then
+    set -x
+    ghq get "github.com/$username/$repo"
+    set +x
   fi
 
-  cd "$dir" || exit 1
-  echo "Updating flake in $dir"
-  dirbase=$(basename "$dir")
-  metadata=$(cat "$tmpdir/$dirbase.json")
+  cd "$root_dir/$repo" || exit 1
+
+  metadata=$(cat "$tmpdir/$repo.json")
   inputs=$(echo "$metadata" | jq --raw-output '.locks.nodes."root".inputs | to_entries | map(.key) | .[]')
+
+  checkpoint_ran=false
+
   for input in $inputs; do
     owner=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$input\".original.owner")
     if [ "$owner" = "$username" ] || [ "$update_externals" = true ]; then
-      nix flake update "$input" --commit-lock-file
+      echo ""
+      set -x
+      nix flake update "$input"
+      git add flake.lock
+      set +x
+      if [ -n "$(git status --porcelain)" ]; then
+        set -x
+        git commit -m "Update flake input $input"
+        set +x
+        nix-checkpoint
+        checkpoint_ran=true
+      fi
     fi
   done
-  nix-checkpoint
+
+  if [ "$checkpoint_ran" = false ]; then
+    nix-checkpoint
+  fi
 done
