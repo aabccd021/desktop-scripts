@@ -68,19 +68,47 @@ for repo in $update_dirs; do
 
   checkpoint_ran=false
 
+  if [ "$update_externals" = true ]; then
+    echo "Updating input nixpkgs"
+    nix flake update nixpkgs
+    git add flake.lock
+    if [ -n "$(git status --porcelain)" ]; then
+      git commit -m "Update flake input $input"
+      nix-checkpoint
+      checkpoint_ran=true
+    fi
+  fi
+
+  user_inputs=""
   for input in $inputs; do
     owner=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$input\".original.owner")
-    if [ "$owner" = "$username" ] || [ "$update_externals" = true ]; then
-      echo "Updating input $input"
-      nix flake update "$input"
-      git add flake.lock
-      if [ -n "$(git status --porcelain)" ]; then
-        git commit -m "Update flake input $input"
-        nix-checkpoint
-        checkpoint_ran=true
-      fi
+    if [ "$owner" = "$username" ]; then
+      user_inputs="$user_inputs $input"
     fi
   done
+
+  if [ -n "$user_inputs" ]; then
+    echo "Updating user Inputs inputs: $user_inputs"
+    # shellcheck disable=SC2086
+    nix flake update $user_inputs
+    git add flake.lock
+    if [ -n "$(git status --porcelain)" ]; then
+      git commit -m "Update flake inputs"
+      nix-checkpoint
+      checkpoint_ran=true
+    fi
+  fi
+
+  if [ "$update_externals" = true ]; then
+    echo "Updating all inputs"
+    nix flake update
+    git add flake.lock
+    if [ -n "$(git status --porcelain)" ]; then
+      git commit -m "Update external flake inputs"
+      nix-checkpoint
+      checkpoint_ran=true
+    fi
+  fi
 
   if [ "$checkpoint_ran" = false ]; then
     nix-checkpoint
