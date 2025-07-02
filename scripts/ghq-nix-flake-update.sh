@@ -69,7 +69,7 @@ for repo in $update_dirs; do
   checkpoint_ran=false
   updated_inputs=""
 
-  if [ "$update_externals" = true ]; then
+  if [ "$update_externals" = false ]; then
     for input in $inputs; do
       owner=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$input\".original.owner")
       if [ "$owner" = "$username" ]; then
