@@ -80,7 +80,10 @@ for repo in $update_dirs; do
     updated_inputs="$inputs"
   fi
 
-  echo "Updating inputs: $updated_inputs"
+  echo "Updating inputs:"
+  for input in $updated_inputs; do
+    echo "- $input"
+  done
   # shellcheck disable=SC2086
   nix flake update $updated_inputs
   git add flake.lock
