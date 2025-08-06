@@ -56,9 +56,7 @@ for repo in $update_dirs; do
   echo "Updating repository $repo"
 
   if [ ! -d "$root_dir/$repo" ]; then
-    set -x
-    ghq get "github.com/$username/$repo"
-    set +x
+    continue
   fi
 
   cd "$root_dir/$repo" || exit 1
