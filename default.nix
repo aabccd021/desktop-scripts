@@ -47,6 +47,11 @@ let
     ghq-nix-flake-update = [ pkgs.jq ];
     dua-nix = [ pkgs.dua ];
     npm-publish = [ pkgs.nodejs ];
+    run-gh-workflow = [
+      pkgs.findutils
+      pkgs.yq
+      pkgs.fzf
+    ];
   };
 in
 pkgs.lib.mapAttrs' (name: runtimeInputs: {
