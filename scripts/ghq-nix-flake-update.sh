@@ -32,7 +32,7 @@ update_flake() {
   inputs=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$node\".inputs | to_entries | map(.value) | .[]")
   for input in $inputs; do
     flake=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$input\".flake")
-    if [ "$flake" == "false" ]; then
+    if [ "$flake" = "false" ]; then
       continue
     fi
     owner=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$input\".original.owner")
