@@ -1,9 +1,14 @@
 update_externals=false
+inputs_from=""
 
 while [ $# -gt 0 ]; do
   case "$1" in
   --update-externals)
     update_externals=true
+    ;;
+  --inputs-from)
+    inputs_from="$2"
+    shift
     ;;
   *)
     echo "Unknown option: $1"
@@ -26,6 +31,10 @@ update_flake() {
   node="$1"
   inputs=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$node\".inputs | to_entries | map(.value) | .[]")
   for input in $inputs; do
+    flake=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$input\".flake")
+    if [ "$flake" == "false" ]; then
+      continue
+    fi
     owner=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$input\".original.owner")
     if [ "$owner" = "$username" ]; then
       repo=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$input\".original.repo")
@@ -61,6 +70,10 @@ for repo in $update_dirs; do
 
   cd "$root_dir/$repo" || exit 1
 
+  if [ ! -f "$tmpdir/$repo.json" ]; then
+    continue
+  fi
+
   metadata=$(cat "$tmpdir/$repo.json")
   inputs=$(echo "$metadata" | jq --raw-output '.locks.nodes."root".inputs | to_entries | map(.key) | .[]')
 
@@ -82,8 +95,14 @@ for repo in $update_dirs; do
   for input in $updated_inputs; do
     echo "- $input"
   done
-  # shellcheck disable=SC2086
-  nix flake update $updated_inputs
+  if [ -z "$inputs_from" ]; then
+    # shellcheck disable=SC2086
+    nix flake update $updated_inputs
+  else
+    # shellcheck disable=SC2086
+    nix flake update $updated_inputs --inputs-from "$inputs_from"
+  fi
+
   git add flake.lock
   if [ -n "$(git status --porcelain)" ]; then
     git commit -m "Update flake inputs"
