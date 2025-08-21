@@ -26,4 +26,5 @@ else
   selected_job=$(echo "$jobs" | fzf)
 fi
 
-yq --raw-output ".jobs.$selected_job.steps[] | select(.run) | .run" "$selected_workflow_file" | sh
+steps=$(yq --raw-output ".jobs.$selected_job.steps[] | select(.run) | .run" "$selected_workflow_file")
+sh -eu -c "$steps"
