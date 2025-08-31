@@ -15,7 +15,7 @@ let
     nix-store-repair = [ ];
     tl = [ pkgs.translate-shell ];
     list-desktops = [ ];
-    kdec-share = [ pkgs.libsForQt5.kdeconnect-kde ];
+    kdec-share = [ pkgs.kdePackages.kdeconnect-kde ];
     cam = [
       pkgs.fzf
       pkgs.ffmpeg-full
