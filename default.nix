@@ -52,6 +52,9 @@ let
       pkgs.yq
       pkgs.fzf
     ];
+    hyprctl-cycle-mfact = [
+      pkgs.jq
+    ];
   };
 in
 pkgs.lib.mapAttrs' (name: runtimeInputs: {
