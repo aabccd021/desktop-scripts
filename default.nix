@@ -25,6 +25,7 @@ let
       pkgs.fzf
     ];
     gc-full-nix = [ ];
+    git-root = [ ];
     screenshot-each-monitor = [
       pkgs.maim
       pkgs.jc
