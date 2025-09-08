@@ -1,6 +1,5 @@
 doas echo starting garbage collection
 
-nix-channel --update
 nix-env -u --always
 nix-collect-garbage -d
 
