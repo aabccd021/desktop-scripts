@@ -36,10 +36,6 @@ let
       pkgs.jq
       pkgs.wlr-randr
     ];
-    menu = [
-      pkgs.fzf
-    ];
-    cycle-ibus-engine = [ ];
     open-match = [ pkgs.jq ];
     ghq-gc = [ ];
     ghq-nvim-nix = [
