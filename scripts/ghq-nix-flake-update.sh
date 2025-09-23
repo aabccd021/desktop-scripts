@@ -105,7 +105,7 @@ for repo in $update_dirs; do
 
   git add flake.lock
   if [ -n "$(git status --porcelain)" ]; then
-    git commit -m "Update flake inputs"
+    git commit -m "Update flake inputs: $updated_inputs"
     nix-checkpoint
     checkpoint_ran=true
   fi
