@@ -13,6 +13,7 @@ let
     ];
     git-branch-fetch = [ pkgs.fzf ];
     nix-store-repair = [ ];
+    nix-gcroot = [ ];
     tl = [ pkgs.translate-shell ];
     list-desktops = [ ];
     kdec-share = [ pkgs.kdePackages.kdeconnect-kde ];
