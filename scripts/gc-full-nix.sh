@@ -3,7 +3,10 @@ doas echo starting garbage collection
 nix-env -u --always
 nix-collect-garbage -d
 
-doas nix-channel --update
+if command -v nix-channel >/dev/null 2>&1; then
+  doas nix-channel --update
+fi
+
 doas nix-env -u --always
 
 # https://nixos.org/guides/nix-pills/11-garbage-collector#indirect-roots
