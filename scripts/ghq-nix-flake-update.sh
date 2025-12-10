@@ -20,7 +20,7 @@ done
 
 NIX_CONFIG='
   access-tokens = github.com='"$(gh auth token)"'
-  extra-substituters = https://mirrors.ustc.edu.cn/nix-channels/store https://nix-community.cachix.org
+  substituters = https://mirrors.ustc.edu.cn/nix-channels/store?priority=39 https://cache.nixos.org https://nix-community.cachix.org
 '
 export NIX_CONFIG
 
