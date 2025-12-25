@@ -2,6 +2,10 @@ selected_path="${1:-}"
 
 if [ -z "$selected_path" ]; then
   logfile="$XDG_DATA_HOME/nvim/oldfiles.txt"
+  if [ ! -f "$logfile" ]; then
+    mkdir -p "$(dirname "$logfile")"
+    touch "$logfile"
+  fi
 
   # cleanup logfile
   tmpfile="$(mktemp)"
