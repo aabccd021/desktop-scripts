@@ -7,4 +7,4 @@ if [ $exit_code -ne 0 ]; then
 fi
 
 selected=$(gh repo list --limit 100 --json nameWithOwner --jq '.[].nameWithOwner' | fzf)
-ghq get "https://$(gh auth token)@github.com/$selected"
+ghq get "git@github.com:$selected.git"
