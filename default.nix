@@ -82,17 +82,20 @@ let
       pkgs.git
       pkgs.coreutils
     ];
-    ghq-nvim-nix = [
-      pkgs.fzf
-      pkgs.gawk
-      pkgs.moreutils
-      pkgs.findutils
-      pkgs.coreutils
-      pkgs.gnused
-      pkgs.git
-      pkgs.nix
-      pkgs.ghq
-    ];
+    ghq-nvim-nix = {
+      runtimeInputs = [
+        pkgs.fzf
+        pkgs.gawk
+        pkgs.moreutils
+        pkgs.findutils
+        pkgs.coreutils
+        pkgs.gnused
+        pkgs.git
+        pkgs.nix
+        pkgs.ghq
+      ];
+      inheritPath = true;
+    };
     ghq-nix-flake-update = [
       pkgs.jq
       pkgs.gh
@@ -128,12 +131,18 @@ let
     ];
   };
 in
-pkgs.lib.mapAttrs' (name: runtimeInputs: {
-  name = name;
-  value = pkgs.writeShellApplication {
+pkgs.lib.mapAttrs' (
+  name: value:
+  let
+    isAttrSet = builtins.isAttrs value;
+    runtimeInputs = if isAttrSet then value.runtimeInputs else value;
+    inheritPath = if isAttrSet then value.inheritPath or false else false;
+  in
+  {
     name = name;
-    runtimeInputs = runtimeInputs;
-    inheritPath = false;
-    text = builtins.readFile "${./scripts}/${name}.sh";
-  };
-}) scripts
+    value = pkgs.writeShellApplication {
+      inherit name runtimeInputs inheritPath;
+      text = builtins.readFile "${./scripts}/${name}.sh";
+    };
+  }
+) scripts
