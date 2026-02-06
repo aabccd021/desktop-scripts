@@ -56,6 +56,10 @@ let
     hyprctl-cycle-mfact = [
       pkgs.jq
     ];
+    chrome-by-email = [
+      pkgs.jq
+      pkgs.google-chrome
+    ];
   };
 in
 pkgs.lib.mapAttrs' (name: runtimeInputs: {

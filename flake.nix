@@ -10,7 +10,14 @@
 
       overlay = (_: prev: import ./default.nix { pkgs = prev; });
 
-      pkgs = inputs.nixpkgs.legacyPackages.x86_64-linux;
+      pkgs = import inputs.nixpkgs {
+        system = "x86_64-linux";
+        config.allowUnfreePredicate =
+          pkg:
+          builtins.elem (pkgs.lib.getName pkg) [
+            "google-chrome"
+          ];
+      };
 
       treefmtEval = inputs.treefmt-nix.lib.evalModule pkgs {
         projectRootFile = "flake.nix";
