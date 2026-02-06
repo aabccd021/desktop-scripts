@@ -8,8 +8,6 @@
     { self, ... }@inputs:
     let
 
-      overlay = (_: prev: import ./default.nix { pkgs = prev; });
-
       pkgs = import inputs.nixpkgs {
         system = "x86_64-linux";
         config.allowUnfreePredicate =
@@ -61,7 +59,6 @@
 
       checks.x86_64-linux = packages;
       formatter.x86_64-linux = formatter;
-      overlays.default = overlay;
       devShells.x86_64-linux = devShells;
 
     };
