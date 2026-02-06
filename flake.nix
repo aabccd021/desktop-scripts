@@ -15,6 +15,7 @@
         config.allowUnfreePredicate =
           pkg:
           builtins.elem (pkgs.lib.getName pkg) [
+            "claude-code"
             "google-chrome"
           ];
       };

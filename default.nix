@@ -122,6 +122,10 @@ let
       pkgs.jq
       pkgs.google-chrome
     ];
+    claude-commit = [
+      pkgs.claude-code
+      pkgs.git
+    ];
   };
 in
 pkgs.lib.mapAttrs' (name: runtimeInputs: {
