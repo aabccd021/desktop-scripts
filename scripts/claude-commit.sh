@@ -7,4 +7,4 @@ if [ $# -gt 0 ]; then
 fi
 
 claude --print "$prompt" \
-  --allowedTools "Bash(git diff *),Bash(git log *),Bash(git status *),Bash(git commit *)"
+  --allowedTools "Bash(git:*)"
