@@ -1,6 +1,19 @@
+#!/usr/bin/env bash
+# ghq-nix-flake-update: Update Nix flake inputs across all your repositories
+#
+# Scans all repositories under your GitHub username in ghq root,
+# analyzes flake dependencies, and updates them in dependency order.
+# By default only updates inputs owned by you; use --update-externals
+# to update all inputs.
+#
+# Options:
+#   --update-externals  Update all inputs, not just your own
+#   --inputs-from PATH  Use inputs from another flake
+
 update_externals=false
 inputs_from=""
 
+# Parse arguments
 while [ $# -gt 0 ]; do
   case "$1" in
   --update-externals)
@@ -18,6 +31,7 @@ while [ $# -gt 0 ]; do
   shift
 done
 
+# Configure Nix with GitHub token and substituters
 NIX_CONFIG='
   access-tokens = github.com='"$(gh auth token)"'
   substituters = https://mirrors.ustc.edu.cn/nix-channels/store?priority=39 https://cache.nixos.org https://nix-community.cachix.org
@@ -30,6 +44,7 @@ root_dir="$(ghq root)/github.com/$username"
 tmpfile=$(mktemp)
 tmpdir=$(mktemp -d)
 
+# Recursively find all inputs owned by the user
 update_flake() {
   node="$1"
   inputs=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$node\".inputs | to_entries | map(.value) | .[]")
@@ -47,6 +62,7 @@ update_flake() {
   done
 }
 
+# First pass: collect all flakes and their dependencies
 for dir in "$root_dir"/*/; do
   repo=$(basename "$dir")
 
@@ -61,8 +77,10 @@ for dir in "$root_dir"/*/; do
   update_flake "root"
 done
 
+# Determine update order (reverse topological sort)
 update_dirs=$(tac "$tmpfile" | awk '!seen[$0]++')
 
+# Second pass: update each repository
 for repo in $update_dirs; do
   echo ""
   echo "Updating repository $repo"
@@ -83,6 +101,7 @@ for repo in $update_dirs; do
   checkpoint_ran=false
   updated_inputs=""
 
+  # Filter inputs based on ownership
   if [ "$update_externals" = false ]; then
     for input in $inputs; do
       owner=$(echo "$metadata" | jq --raw-output ".locks.nodes.\"$input\".original.owner")
@@ -98,6 +117,8 @@ for repo in $update_dirs; do
   for input in $updated_inputs; do
     echo "- $input"
   done
+
+  # Run flake update
   if [ -z "$inputs_from" ]; then
     # shellcheck disable=SC2086
     nix flake update $updated_inputs
@@ -106,6 +127,7 @@ for repo in $update_dirs; do
     nix flake update $updated_inputs --inputs-from "$inputs_from"
   fi
 
+  # Commit changes if any
   git add flake.lock
   if [ -n "$(git status --porcelain)" ]; then
     git commit -m "Update flake inputs: $updated_inputs"

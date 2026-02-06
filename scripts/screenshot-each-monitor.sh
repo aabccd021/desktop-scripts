@@ -1,3 +1,10 @@
+#!/usr/bin/env bash
+# screenshot-each-monitor: Take screenshots of each connected monitor (X11)
+#
+# Uses xrandr to detect connected monitors, then captures a screenshot
+# of each monitor individually using maim. Screenshots are saved to
+# XDG_PICTURES_DIR with timestamp and monitor name.
+
 if [ -z "$XDG_PICTURES_DIR" ]; then
   echo "XDG_PICTURES_DIR is not set. Exiting."
   exit 1
@@ -8,6 +15,7 @@ if [ ! -d "$XDG_PICTURES_DIR" ]; then
   exit 1
 fi
 
+# Get monitor information using xrandr and parse with jc
 if ! monitor_data=$(xrandr | jc --xrandr); then
   echo "Failed to get monitor information. Exiting."
   exit 1
@@ -21,10 +29,11 @@ fi
 
 timestamp=$(date +%Y%m%d-%H%M%S)
 
+# Iterate through each connected monitor and take a screenshot
 echo "$monitor_data" |
   jq -c '.screens[0].devices[] | select(.is_connected == true)' |
   while read -r monitor; do
-
+    # Extract monitor geometry
     name=$(echo "$monitor" | jq -r '.device_name')
     width=$(echo "$monitor" | jq -r '.resolution_width')
     height=$(echo "$monitor" | jq -r '.resolution_height')
