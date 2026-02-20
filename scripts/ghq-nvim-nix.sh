@@ -7,6 +7,20 @@
 # - Falls back to opening without devShell if build fails
 # - Maintains a history of opened files for quick access
 
+# Cleanup stale nix devshell cache entries
+cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/nix-devshells"
+ghq_root=$(ghq root)
+if [ -d "$cache_dir" ]; then
+  find "$cache_dir" -type l | while read -r link; do
+    repo_relpath="${link#"$cache_dir"/}"
+    if [ ! -d "$ghq_root/$repo_relpath" ]; then
+      rm "$link"
+    fi
+  done
+  # Remove empty directories
+  find "$cache_dir" -type d -empty -delete
+fi
+
 selected_path="${1:-}"
 
 if [ -z "$selected_path" ]; then
@@ -62,7 +76,9 @@ cd "$repo_root" || exit 1
 
 # Try to build the devShell
 system=$(nix eval --impure --raw --expr 'builtins.currentSystem')
-if ! nix build --no-link ".#.devShells.$system.default"; then
+repo_relpath="${repo_root#"$ghq_root"/}"
+mkdir -p "$cache_dir/$(dirname "$repo_relpath")"
+if ! nix build -o "$cache_dir/$repo_relpath" ".#.devShells.$system.default"; then
   # Build failed - try to open README if selecting a directory
   readme_file=$(
     find "$selected_path" -maxdepth 1 -type f \( -iname "readme*" -o -iname "README*" \) |
