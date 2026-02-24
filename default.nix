@@ -50,6 +50,7 @@ let
     get-my-repo = [
       pkgs.gh
       pkgs.git
+      pkgs.openssh
       pkgs.fzf
       pkgs.ghq
     ];
