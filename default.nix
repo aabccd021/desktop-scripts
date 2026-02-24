@@ -49,6 +49,7 @@ let
     ];
     get-my-repo = [
       pkgs.gh
+      pkgs.git
       pkgs.fzf
       pkgs.ghq
     ];
@@ -64,7 +65,7 @@ let
       pkgs.maim
       pkgs.jc
       pkgs.jq
-      pkgs.xorg.xrandr
+      pkgs.xrandr
       pkgs.coreutils
     ];
     screenshot-each-monitor-wayland = [
