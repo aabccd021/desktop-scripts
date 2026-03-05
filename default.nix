@@ -131,6 +131,12 @@ let
       pkgs.claude-code
       pkgs.git
     ];
+    gcloud-geosurge = {
+      runtimeInputs = [
+        pkgs.google-cloud-sdk
+      ];
+      inheritPath = true;
+    };
   };
 in
 pkgs.lib.mapAttrs' (

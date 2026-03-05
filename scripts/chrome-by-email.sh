@@ -3,11 +3,14 @@
 #
 # Looks up the Chrome profile directory associated with a given email
 # address from Chrome's Local State file and launches Chrome with that profile.
+#
+# Usage: chrome-by-email <email> [url]
 
 email="$1"
+url="$2"
 
 if [ -z "$email" ]; then
-  echo "Usage: chrome-by-email <email>"
+  echo "Usage: chrome-by-email <email> [url]"
   exit 1
 fi
 
@@ -22,4 +25,4 @@ if [ -z "$profile_dir" ]; then
 fi
 
 # Launch Chrome with the matched profile
-exec google-chrome-stable --profile-directory="$profile_dir"
+exec google-chrome-stable --profile-directory="$profile_dir" "$url"
