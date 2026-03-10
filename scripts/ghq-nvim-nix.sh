@@ -74,11 +74,20 @@ fi
 trap 'cd $(pwd)' EXIT
 cd "$repo_root" || exit 1
 
+# Determine shell name from .env file or default
+shell_name="default"
+if [ -f "$repo_root/.env" ]; then
+  env_shell=$(grep -E '^NIX_DEVSHELL=' "$repo_root/.env" | cut -d'=' -f2- | tr -d '"'"'")
+  if [ -n "$env_shell" ]; then
+    shell_name="$env_shell"
+  fi
+fi
+
 # Try to build the devShell
 system=$(nix eval --impure --raw --expr 'builtins.currentSystem')
 repo_relpath="${repo_root#"$ghq_root"/}"
 mkdir -p "$cache_dir/$(dirname "$repo_relpath")"
-if ! nix build -o "$cache_dir/$repo_relpath" ".#.devShells.$system.default"; then
+if ! nix build -o "$cache_dir/$repo_relpath" ".#.devShells.$system.$shell_name"; then
   # Build failed - try to open README if selecting a directory
   readme_file=$(
     find "$selected_path" -maxdepth 1 -type f \( -iname "readme*" -o -iname "README*" \) |
@@ -97,5 +106,5 @@ if [ "$selected_path" = "$repo_root" ]; then
 fi
 
 # Open in devShell, falling back to regular editor
-nix develop --command "$EDITOR" "$selected_path" ||
+nix develop ".#$shell_name" --command "$EDITOR" "$selected_path" ||
   exec "$EDITOR" "$selected_path"
