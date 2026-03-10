@@ -75,13 +75,9 @@ trap 'cd $(pwd)' EXIT
 cd "$repo_root" || exit 1
 
 # Determine shell name from .env file or default
-shell_name="default"
-if [ -f "$repo_root/.env" ]; then
-  env_shell=$(grep -E '^NIX_DEVSHELL=' "$repo_root/.env" | cut -d'=' -f2- | tr -d '"'"'")
-  if [ -n "$env_shell" ]; then
-    shell_name="$env_shell"
-  fi
-fi
+# shellcheck source=/dev/null
+source "$repo_root/.env" 2>/dev/null || true
+shell_name="${NIX_DEVSHELL:-default}"
 
 # Try to build the devShell
 system=$(nix eval --impure --raw --expr 'builtins.currentSystem')
