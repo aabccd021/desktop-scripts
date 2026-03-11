@@ -123,6 +123,13 @@ let
       pkgs.jq
       pkgs.hyprland
     ];
+    clone-pr = {
+      runtimeInputs = [
+        pkgs.gh
+        pkgs.git
+      ];
+      inheritPath = true;
+    };
     chrome-by-email = [
       pkgs.jq
       pkgs.google-chrome
@@ -131,12 +138,6 @@ let
       pkgs.claude-code
       pkgs.git
     ];
-    gcloud-geosurge = {
-      runtimeInputs = [
-        pkgs.google-cloud-sdk
-      ];
-      inheritPath = true;
-    };
   };
 in
 pkgs.lib.mapAttrs' (
