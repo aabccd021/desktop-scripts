@@ -18,4 +18,3 @@ mkdir -p "$HOME/pr"
 git clone "git@github.com:$repo.git" "$HOME/pr/$repo/$pr_number" --branch "$branch" --single-branch
 
 cd "$HOME/pr/$repo/$pr_number" || exit
-claude --dangerously-skip-permissions
