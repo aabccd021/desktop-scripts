@@ -76,7 +76,7 @@ cd "$repo_root" || exit 1
 
 # Determine shell name from .env file or default
 # shellcheck source=/dev/null
-source "$repo_root/.env" 2>/dev/null || true
+. "$repo_root/.env" 2>/dev/null || true
 shell_name="${NIX_DEVSHELL:-default}"
 
 # Try to build the devShell
