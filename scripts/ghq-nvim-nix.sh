@@ -76,7 +76,9 @@ cd "$repo_root" || exit 1
 
 # Determine shell name from .env file or try lazy, then default
 # shellcheck source=/dev/null
+set -a
 . "$repo_root/.env" 2>/dev/null || true
+set +a
 system=$(nix eval --impure --raw --expr 'builtins.currentSystem')
 if [ -n "${NIX_DEVSHELL:-}" ]; then
   shell_name="$NIX_DEVSHELL"
