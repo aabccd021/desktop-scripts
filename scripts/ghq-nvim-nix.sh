@@ -74,13 +74,19 @@ fi
 trap 'cd $(pwd)' EXIT
 cd "$repo_root" || exit 1
 
-# Determine shell name from .env file or default
+# Determine shell name from .env file or try lazy, then default
 # shellcheck source=/dev/null
 . "$repo_root/.env" 2>/dev/null || true
-shell_name="${NIX_DEVSHELL:-default}"
+system=$(nix eval --impure --raw --expr 'builtins.currentSystem')
+if [ -n "$NIX_DEVSHELL" ]; then
+  shell_name="$NIX_DEVSHELL"
+elif nix eval ".#devShells.$system.lazy" &>/dev/null; then
+  shell_name="lazy"
+else
+  shell_name="default"
+fi
 
 # Try to build the devShell
-system=$(nix eval --impure --raw --expr 'builtins.currentSystem')
 repo_relpath="${repo_root#"$ghq_root"/}"
 mkdir -p "$cache_dir/$(dirname "$repo_relpath")"
 if ! nix build -o "$cache_dir/$repo_relpath" ".#.devShells.$system.$shell_name"; then
