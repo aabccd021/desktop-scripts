@@ -78,7 +78,7 @@ cd "$repo_root" || exit 1
 # shellcheck source=/dev/null
 . "$repo_root/.env" 2>/dev/null || true
 system=$(nix eval --impure --raw --expr 'builtins.currentSystem')
-if [ -n "$NIX_DEVSHELL" ]; then
+if [ -n "${NIX_DEVSHELL:-}" ]; then
   shell_name="$NIX_DEVSHELL"
 elif nix eval ".#devShells.$system.lazy" &>/dev/null; then
   shell_name="lazy"
