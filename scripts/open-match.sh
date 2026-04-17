@@ -45,6 +45,17 @@ for url in $urls; do
         break
         ;;
       esac
+    elif [ "$match_type" = "contains" ]; then
+      # Contains matching: check if URL contains pattern
+      url_pattern=$(echo "$rule" | jq -r '.[1]')
+      handler=$(echo "$rule" | jq -r '.[2]')
+
+      case "$url" in
+      *"$url_pattern"*)
+        $handler "$url" &
+        break
+        ;;
+      esac
     elif [ "$match_type" = "all" ]; then
       # Catch-all rule
       handler=$(echo "$rule" | jq -r '.[1]')

@@ -53,6 +53,7 @@ let
       pkgs.openssh
       pkgs.fzf
       pkgs.ghq
+      pkgs.coreutils
     ];
     gc-full-nix = [
       pkgs.nix
