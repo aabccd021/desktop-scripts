@@ -131,6 +131,13 @@ let
       ];
       inheritPath = true;
     };
+    clone-tmp = {
+      runtimeInputs = [
+        pkgs.git
+        pkgs.coreutils
+      ];
+      inheritPath = true;
+    };
     chrome-by-email = [
       pkgs.jq
       pkgs.google-chrome
