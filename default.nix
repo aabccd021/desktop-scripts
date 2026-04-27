@@ -147,6 +147,19 @@ let
       pkgs.git
     ];
   };
+
+  linuxOnlyScripts = [
+    "kill-fzf"
+    "clipboard"
+    "screenshot-each-monitor"
+    "screenshot-each-monitor-wayland"
+    "hyprctl-cycle-mfact"
+    "kdec-share"
+    "gc-full-nix"
+  ];
+
+  filteredScripts =
+    if pkgs.stdenv.hostPlatform.isLinux then scripts else builtins.removeAttrs scripts linuxOnlyScripts;
 in
 pkgs.lib.mapAttrs' (
   name: value:
@@ -162,4 +175,4 @@ pkgs.lib.mapAttrs' (
       text = builtins.readFile "${./scripts}/${name}.sh";
     };
   }
-) scripts
+) filteredScripts
