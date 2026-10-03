@@ -82,7 +82,7 @@ set +a
 system=$(nix eval --impure --raw --expr 'builtins.currentSystem')
 if [ -n "${NIX_DEVSHELL:-}" ]; then
   shell_name="$NIX_DEVSHELL"
-elif nix eval ".#devShells.$system.lazy" &>/dev/null; then
+elif nix eval ".#devShells.$system.lazy" >/dev/null 2>&1; then
   shell_name="lazy"
 else
   shell_name="default"
